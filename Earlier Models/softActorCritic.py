@@ -7,6 +7,7 @@ import sys
 from keras.layers import Dense
 from keras.optimizers import Adam
 from keras.models import Sequential
+from keras.losses import mean_absolute_error
 
 EPISODES = 30000
 class Agent():
@@ -20,16 +21,11 @@ class Agent():
         self.batch_size = 32
         self.train_start = 1000 #start training after 1000 time steps of data has been collected
 
-        #epsilon parameters
-        self.epsilon = 1
-        self.epsilon_min = 0.01
-        self.epsilon_decay = .999
-
         # instantiate replay memory which is used to make samples independent
         self.memory = deque(maxlen=50000)
 
         # instantiate models
-        self.policy = self.build_model() #actor
+        self.policy = self.build_policy()
         self.q1 = self.build_model()
         self.q2 = self.build_model()
         self.v = self.build_model()
@@ -37,7 +33,16 @@ class Agent():
         self.update_target_model()
 
     def update_target_model(self):
-        self.target_v.set_weights(self.v.get_weights())
+        self.target_model.set_weights(self.model.get_weights())
+
+    def build_policy(self):
+        model = Sequential()
+        model.add(Dense(64, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
+        model.add(Dense(16, activation='relu', kernel_initializer='he_uniform'))
+        model.add(Dense(4, activation='relu', kernel_initializer='he_uniform'))
+        model.add(Dense(self.action_size, activation = 'linear', kernel_initializer='he_uniform'))
+        model.compile(loss = mean_absolute_error, optimizer=Adam(self.learning_rate))
+        return model
 
     def build_model(self): #the neural network
         model = Sequential()
@@ -49,23 +54,44 @@ class Agent():
         return model
 
     def get_action(self, state): # e greedy exploration
-        if np.random.rand() <= self.epsilon:
-            return random.randrange(self.action_size)
-        else:
-            q_values = self.model.predict(state)
-            return np.argmax(q_values[0]) #pick action with highest action value
+        return np.argmax(q_values[0]) #pick action with highest action value
 
     def replay_memory(self, s_t1, a, r, s_t2, done): # store transition tuple
         self.memory.append((s_t1, a, r, s_t2, done))
-        if self.epsilon > self.epsilon_min: #update epsilon
-            self.epsilon *= self.epsilon_decay
+
 
     def train(self):
         if(len(self.memory) < self.train_start):
             return
 
         minibatch =  random.sample(self.memory,self.batch_size)
-        state_t, action_t, reward_t, state_t1, done = zip(*minibatch) #list of states, actions, rewards...
+        state_t, action_t, reward_t, state_t1, done = zip(*minibatch)
+        state_t = np.concatenate(state_t) #list of states
+        state_t1 = np.concatenate(state_t1) #list of next states
+        action_t = np.concatenate(action_t) #list of actions
+
+        q1_true = np.array([self.q1.predict(s)[a] for s,a in zip(state_t,action_t)])
+        q2_true = np.array([self.q2.predict(s)[a] for s,a in zip(state_t,action_t)])
+        q_targets = reward_t + self.gamma * (1 - d) * self.target_v.predict(state_t1)
+
+        action_probabilities = self.policy.predict(state_t)
+        mean = np.mean(action_probabilities)
+        std_dev = np.std(action_probabilities)
+        action_theta = np.max(action_probabilities)
+        log_prob = np.log(action_theta)
+        reparameterized = np.tanh(mean + std_dev * np.random.normal())
+
+        q1 =self.q1.predict(state_t)[action_theta] #q_1(s,a~) x 32
+        q2 =self.q2.predict(state_t)[action_theta] #q_2(s,a~) x 32
+        q = np.array([min(a,b) for a,b in zip(q1,q2)])
+        v_targets = q - self.alpha * np.log(action_theta)
+        policy_targets = self.alpha * reparameterized
+        policy_true = self.q1.predict(policy_targets)
+
+        self.q1.train_on_batch(q1_true, q_targets)
+        self.q2.train_on_batch(q2_true, q_targets)
+        self.v.train_on_batch(v_true, v_targets)
+        self.policy.train_on_batch(policy_true, policy_targets)
 
     def load_model(self, name):
         self.model.load_weights(name)
@@ -128,8 +154,6 @@ def train(modelName):
                 episodes.append(e)
                 #pylab.plot(episodes, scores, 'b')
                 #pylab.savefig("Cartpole_dqn.png")
-                print("episode:", e, "  score:", score, "  memory length:", len(agent.memory),
-                      "  epsilon:", agent.epsilon)
                 #environment is considered solved if the mean score of 10 episodes is >490
                 if np.mean(scores[-min(10,len(scores)):]) == 500:
                     agent.save_model("cartpole-dqn.h5")
