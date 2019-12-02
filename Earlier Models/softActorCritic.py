@@ -81,8 +81,8 @@ class Agent():
         log_prob = np.log(action_theta)
         reparameterized = np.tanh(mean + std_dev * np.random.normal())
 
-        q1 =self.q1.predict(state_t)[action_theta] #q_1(s,a~) x 32
-        q2 =self.q2.predict(state_t)[action_theta] #q_2(s,a~) x 32
+        q1 =self.q1.predict(state_t)[action_theta]
+        q2 =self.q2.predict(state_t)[action_theta]
         q = np.array([min(a,b) for a,b in zip(q1,q2)])
         v_targets = q - self.alpha * np.log(action_theta)
         policy_targets = self.alpha * reparameterized
@@ -92,6 +92,22 @@ class Agent():
         self.q2.train_on_batch(q2_true, q_targets)
         self.v.train_on_batch(v_true, v_targets)
         self.policy.train_on_batch(policy_true, policy_targets)
+
+    def updateQfunctions(state_t,action_t,reward_t,state_t1,d):
+        q1_true = np.array([self.q1.predict(s)[a] for s,a in zip(state_t,action_t)])
+        q2_true = np.array([self.q2.predict(s)[a] for s,a in zip(state_t,action_t)])
+        q_targets = reward_t + self.gamma * (1 - d) * self.target_v.predict(state_t1)
+        self.q1.train_on_batch(q1_true, q_targets)
+        self.q2.train_on_batch(q2_true, q_targets)
+
+    def updateValueFunction(state_t,action_t,reward_t,state_t1,d,action_theta):
+        q1 =self.q1.predict(state_t)[action_theta]
+        q2 =self.q2.predict(state_t)[action_theta]
+        q = np.array([min(a,b) for a,b in zip(q1,q2)])
+        v_targets = q - self.alpha * np.log(action_theta)
+        v_true = self.v.predict(state_t)
+        self.v.train_on_batch(v_true, v_targets)
+
 
     def load_model(self, name):
         self.model.load_weights(name)
