@@ -44,6 +44,7 @@ class DQN_agent():
         self.target_model.set_weights(self.model.get_weights())
 
     def get_action(self, state): # e greedy exploration
+        print(self.model.predict(state))
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
         else:
@@ -82,20 +83,21 @@ if __name__ == "__main__": #allows this dqn to be imported to other files
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n #number of actions
     agent = DQN_agent(state_size, action_size)
-    agent.load_model("cartpole-dqn.h5")
+    #uncomment if you want to just see it running (have to train first)
+    # agent.load_model("cartpole-dqn.h5")
+    #
+    # done = False
+    # state = env.reset()
+    # state = np.reshape(state, [1, state_size])
+    #
+    # while not done:
+    #     env.render()
+    #     action = agent.get_action(state)
+    #     next_state, reward, done, info = env.step(action)
+    #     next_state = np.reshape(next_state, [1, state_size])
+    #     state = next_state
 
-    done = False
-    state = env.reset()
-    state = np.reshape(state, [1, state_size])
 
-    while not done:
-        env.render()
-        action = agent.get_action(state)
-        next_state, reward, done, info = env.step(action)
-        next_state = np.reshape(next_state, [1, state_size])
-        state = next_state
-
-    '''
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n #number of actions
 
@@ -138,4 +140,4 @@ if __name__ == "__main__": #allows this dqn to be imported to other files
                     sys.exit()
                 #save model every 500 episodes
                 if e % 500 == 0:
-                    agent.save_model("cartpole-dqn.h5")'''
+                    agent.save_model("cartpole-dqn.h5")

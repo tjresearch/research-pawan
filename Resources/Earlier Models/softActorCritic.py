@@ -32,7 +32,7 @@ class Agent():
         self.update_target_model()
 
     def update_target_model(self):
-        self.target_model.set_weights(self.model.get_weights())
+        self.target_v.set_weights(self.model.get_weights())
 
     def build_policy(self):
         model = Sequential()
@@ -53,7 +53,7 @@ class Agent():
         return model
 
     def get_action(self, state): # e greedy exploration
-        return np.argmax(self.policy.predict(state)[0]) #pick action with highest action value
+        return np.argmax(self.policy.predict(state)[0]) #pick action according to policy
 
     def store_replay(self, s_t1, a, r, s_t2, done): # store transition tuple
         self.memory.append((s_t1, a, r, s_t2, done))
@@ -74,30 +74,31 @@ class Agent():
         updatePolicy(state_t)
 
     def updateQfunctions(state_t,action_t,reward_t,state_t1,d):
-        q1_true = np.array([self.q1.predict(s)[a] for s,a in zip(state_t,action_t)])
-        q2_true = np.array([self.q2.predict(s)[a] for s,a in zip(state_t,action_t)])
-        q_targets = reward_t + self.gamma * (1 - d) * self.target_v.predict(state_t1)
-        self.q1.train_on_batch(q1_true, q_targets)
-        self.q2.train_on_batch(q2_true, q_targets)
+        q1_predicted = np.array([self.q1.predict(s)[0][a] for s,a in zip(state_t,action_t)])
+        q2_predicted = np.array([self.q2.predict(s)[0][a] for s,a in zip(state_t,action_t)])
+        q_targets = reward_t + self.gamma * (1 - d) * self.target_v.predict(state_t1)[0]
+        self.q1.train_on_batch(q1_predicted, q_targets)
+        self.q2.train_on_batch(q2_predicted, q_targets)
 
     def updateValueFunction(state_t,action_t,reward_t,state_t1,d):
         action_theta = np.max(self.policy.predict(state_t))
-        q1 =self.q1.predict(state_t)[action_theta]
-        q2 =self.q2.predict(state_t)[action_theta]
+        q1 =self.q1.predict(state_t)[0][action_theta]
+        q2 =self.q2.predict(state_t)[0][action_theta]
         q = np.array([min(a,b) for a,b in zip(q1,q2)])
         v_targets = q - self.alpha * np.log(action_theta)
-        v_true = self.v.predict(state_t)
-        self.v.train_on_batch(v_true, v_targets)
+        v_predicted = self.v.predict(state_t)[0]
+        self.v.train_on_batch(v_predicted, v_targets)
 
     def updatePolicy(state_t):
-        action_probabilities = self.policy.predict(state_t)
+        action_probabilities = self.policy.predict(state_t)[0]
         mean = np.mean(action_probabilities)
         std_dev = np.std(action_probabilities)
         action_theta = np.max(action_probabilities)
         log_prob = np.log(action_theta)
         reparameterized = np.tanh(mean + std_dev * np.random.normal())
         policy_targets = self.alpha * reparameterized
-        policy_true = self.q1.predict(policy_targets)
+        policy_predicted = self.q1.predict(policy_targets)[0]
+        self.policy.train_on_batch(policy_predicted,policy_targets)
 
     def load_model(self, name):
         self.model.load_weights(name)
