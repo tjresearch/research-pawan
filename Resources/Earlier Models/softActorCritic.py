@@ -11,10 +11,12 @@ from keras.losses import mean_absolute_error
 
 EPISODES = 30000
 class Agent():
-    def__init(self,state_shape, action_shape, **render = False):
+    def __init__(self,state_shape, action_shape, *render):
         self.render = render
+        if render == None:
+            self.render = False
         self.state_size = state_shape
-        self.action_size = action_size
+        self.action_size = action_shape
 
         self.gamma = 0.99 #discount factor
         self.alpha = 0.001 #learning rate
@@ -24,94 +26,92 @@ class Agent():
         self.memory = deque(maxlen=50000)
 
         # instantiate models
-        self.policy = self.build_policy()
-        self.q1 = self.build_model()
-        self.q2 = self.build_model()
-        self.v = self.build_model()
-        self.target_v = self.build_model()
+        self.policy = self.build_model('mean_absolute_error',action_shape)
+        self.q1 = self.build_model('mse',action_shape)
+        self.q2 = self.build_model('mse',action_shape)
+        self.v = self.build_model('mse',1)
+        self.target_v = self.build_model('mse',1)
         self.update_target_model()
 
     def update_target_model(self):
-        self.target_v.set_weights(self.model.get_weights())
+        self.target_v.set_weights(self.v.get_weights())
 
-    def build_policy(self):
+    def build_model(self,loss_function,outputSize): #the neural network
         model = Sequential()
         model.add(Dense(64, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
         model.add(Dense(16, activation='relu', kernel_initializer='he_uniform'))
         model.add(Dense(4, activation='relu', kernel_initializer='he_uniform'))
-        model.add(Dense(self.action_size, activation = 'linear', kernel_initializer='he_uniform'))
-        model.compile(loss = mean_absolute_error, optimizer=Adam(self.learning_rate))
+        model.add(Dense(outputSize, activation = 'linear', kernel_initializer='he_uniform'))
+        model.compile(loss = loss_function, optimizer=Adam(self.alpha))
         return model
 
-    def build_model(self): #the neural network
-        model = Sequential()
-        model.add(Dense(64, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
-        model.add(Dense(16, activation='relu', kernel_initializer='he_uniform'))
-        model.add(Dense(4, activation='relu', kernel_initializer='he_uniform'))
-        model.add(Dense(self.action_size, activation = 'linear', kernel_initializer='he_uniform'))
-        model.compile(loss = 'mse', optimizer=Adam(self.learning_rate))
-        return model
-
-    def get_action(self, state): # e greedy exploration
+    def get_action(self, state):
         return np.argmax(self.policy.predict(state)[0]) #pick action according to policy
 
     def store_replay(self, s_t1, a, r, s_t2, done): # store transition tuple
         self.memory.append((s_t1, a, r, s_t2, done))
 
+    def updateQfunctions(self,state_t,action_t,reward_t,state_t1,d):
+        q1_vals = self.q1.predict(state_t)
+        q1_predicted = np.array([q1_vals[n][a] for n,a in enumerate(action_t)])
+        q2_vals = self.q2.predict(state_t)
+        q2_predicted = np.array([q2_vals[n][a] for n,a in enumerate(action_t)]) 
+        q_targets = reward_t + self.gamma * (np.ones(self.batch_size) - d) * self.target_v.predict(state_t1)
+        print(f'q_targets shape: {q_targets.shape} q1_pred shape: {q1_predicted.shape}')
+        self.q1.train_on_batch(state_t, q_targets)
+        self.q2.train_on_batch(state_t, q_targets)
+        return q1_vals,q2_vals
+
+    def updateValueFunction(self,state_t,action_t,reward_t,state_t1,d, action_probabilities,q1_vals,q2_vals):
+        q1_a = np.array([q1_vals[n][a] for n,a in enumerate(action_theta)])
+        q2_a = np.array([q2_vals[n][a] for n,a in enumerate(action_theta)])
+        q = np.array([min(a,b) for a,b in zip(q1_a,q2_a)])
+        v_targets = q - self.alpha * np.log(np.max(action_probabilities,axis=1))
+        v_predicted = self.v.predict(state_t)
+        self.v.train_on_batch(state_t, targets)
+
+    def updatePolicy(self,state_t,action_probabilities,action_theta,q1_vals):
+        mean = np.mean(action_probabilities,axis=1)
+        std_dev = np.std(action_probabilities,axis=1)
+        noise = np.random.normal(self.action_size,self.batch_size)
+        for row in range(self.action_size):
+            noise[row] = noise[row]*std_dev + mean
+        reparameterized = np.argmax(noise,axis=1)
+        policy_predicted = np.array([q1_vals[n][a] for n,a in enumerate(reparameterized)])
+        policy_targets = self.alpha * np.log(np.max(noise,axis=1))
+        self.policy.train_on_batch(policy_targets, policy_predicted)
 
     def update(self):
         if(len(self.memory) < self.train_start):
             return
 
         minibatch =  random.sample(self.memory,self.batch_size)
-        state_t, action_t, reward_t, state_t1, done = zip(*minibatch)
-        state_t = np.concatenate(state_t) #list of states
-        state_t1 = np.concatenate(state_t1) #list of next states
-        action_t = np.concatenate(action_t) #list of actions
-
-        updateQfunctions(state_t,action_t,reward_t,state_t1,d)
-        updateValueFunction(state_t,action_t,reward_t,state_t1,d,action_theta)
-        updatePolicy(state_t)
-
-    def updateQfunctions(state_t,action_t,reward_t,state_t1,d):
-        q1_predicted = np.array([self.q1.predict(s)[0][a] for s,a in zip(state_t,action_t)])
-        q2_predicted = np.array([self.q2.predict(s)[0][a] for s,a in zip(state_t,action_t)])
-        q_targets = reward_t + self.gamma * (1 - d) * self.target_v.predict(state_t1)[0]
-        self.q1.train_on_batch(q1_predicted, q_targets)
-        self.q2.train_on_batch(q2_predicted, q_targets)
-
-    def updateValueFunction(state_t,action_t,reward_t,state_t1,d):
-        action_theta = np.max(self.policy.predict(state_t))
-        q1 =self.q1.predict(state_t)[0][action_theta]
-        q2 =self.q2.predict(state_t)[0][action_theta]
-        q = np.array([min(a,b) for a,b in zip(q1,q2)])
-        v_targets = q - self.alpha * np.log(action_theta)
-        v_predicted = self.v.predict(state_t)[0]
-        self.v.train_on_batch(v_predicted, v_targets)
-
-    def updatePolicy(state_t):
-        action_probabilities = self.policy.predict(state_t)[0]
-        mean = np.mean(action_probabilities)
-        std_dev = np.std(action_probabilities)
-        action_theta = np.max(action_probabilities)
-        log_prob = np.log(action_theta)
-        reparameterized = np.tanh(mean + std_dev * np.random.normal())
-        policy_targets = self.alpha * reparameterized
-        policy_predicted = self.q1.predict(policy_targets)[0]
-        self.policy.train_on_batch(policy_predicted,policy_targets)
+        state_t, action_t, reward_t, state_t1, done = zip(*minibatch) #list of states in the form [[state1]], [[state2]]
+        state_t = np.concatenate(state_t) #list of list of states in the form [[state1,state2]]
+        state_t1 = np.concatenate(state_t1)
+        action_probabilities = self.policy.predict(state_t)
+        action_theta = np.argmax(action_probabilities,axis=1)
+        q1_vals, q2_vals = self.updateQfunctions(state_t,action_t,reward_t,state_t1,done)
+        self.updateValueFunction(state_t,action_t,reward_t,state_t1,done,action_theta,q1_vals,q2_vals)
+        self.updatePolicy(state_t,action_theta,q1_vals)
 
     def load_model(self, name):
-        self.model.load_weights(name)
+        self.policy.load_weights(name+'policy.h5')
 
     def save_model(self, name):
-        self.model.save_weights(name)
+        self.policy.save_weights(name+'_policy.h5')
+        self.q1.save_weights(name+'_q1.h5')
+        self.q2.save_weights(name+'_q2.h5')
+        self.v.save_weights(name+'_v.h5')
+        self.policy.save_weights(name+'_policy.h5')
+
 
 
 def test(modelName):
     env = gym.make('CartPole-v1')
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n #number of actions
-    agent = DQN_agent(state_size, action_size,render = True)
+    agent = Agent(state_size, action_size,True)
     agent.load_model("modelName")
 
     done = False
@@ -125,11 +125,12 @@ def test(modelName):
         next_state = np.reshape(next_state, [1, state_size])
         state = next_state
 
-def train(modelName):
+def train():
     env = gym.make('CartPole-v1')
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n #number of actions
-    agent = DQN_agent(state_size, action_size)
+    print(f"Created Cartpole Environment state_shape = {state_size} action_shape = {action_size}")
+    agent = Agent(state_size, action_size)
 
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n #number of actions
@@ -162,8 +163,17 @@ def train(modelName):
                 episodes.append(e)
                 #environment is considered solved if the mean score of 10 episodes is >490
                 if np.mean(scores[-min(10,len(scores)):]) == 500:
-                    agent.save_model("cartpole-dqn.h5")
+                    agent.save_model("cartpole-sac")
                     sys.exit()
                 #save model every 500 episodes
                 if e % 500 == 0:
-                    agent.save_model("cartpole-dqn.h5")
+                    agent.save_model("cartpole-sac")
+if __name__ == '__main__':
+    if len(sys.argv) >1:
+        if sys.argv[1] == 'train':
+            train()
+        else:
+            test()
+    else:
+        print("enter train or test")
+        exit()
