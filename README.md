@@ -23,6 +23,7 @@ Requirements (Linux)
 1. Python 3.6
 2. Tensorflow 2.0 GPU and its dependencies
 3. OpenAI Gym and its dependencies
+4. MuJoCo python
 
 ###
 Run instructions (Work in Progress)
@@ -31,8 +32,25 @@ Open a terminal within the repository.
 pip install -r requirements.txt
 Train command:
 Test pre-trained model:
+####
 Description of each folder:
-
+####
+#####
+Presentations:
+#####
+Contains presentations I made over the year
+#####
+Journals:
+#####
+Contains weekly progress reports
+#####
+Resources/Models:
+#####
+This is where you will find repository code for DIAYN, HAC, and OpenAI's soft-actor-critic implementation
+#####
+Resources/scratchwork:
+#####
+Contains miscelanious models I attempted to implement such as Double DQN and Soft-actor-critic
 
 ###
 Replays of some solved environments(Work in Progress)
