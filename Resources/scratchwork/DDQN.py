@@ -5,7 +5,7 @@ import random
 import sys
 
 from keras.layers import Dense
-from keras.optimizers import Adam #look at adabound: https://github.com/Luolc/AdaBound
+from keras.optimizers import Adam
 from keras.models import Sequential
 
 EPISODES = 30000
@@ -78,66 +78,96 @@ class DQN_agent():
     def save_model(self, name):
         self.model.save_weights(name)
 
-if __name__ == "__main__": #allows this dqn to be imported to other files
+
+def triathlon():# solve 3 tasks simultaneously
+    envs = []
+    envs.append(gym.make('Bowling-ram-v0'))
+    envs.append(gym.make('Pong-ram-v0'))
+    envs.append(gym.make('SpaceInvaders-ram-v0'))
+    observation_size = 128
+    action_size = 6
+    agent = DQN_agent(state_size, action_size)
+    for e in range(EPISODES):
+        env = envs[e%len(envs)]
+        done = False
+        score = 0
+        state = np.reshape(env.reset(), [1, state_size])
+        while not done:
+            if agent.render:
+                env.render()
+            action = agent.get_action(state)
+            next_state, reward, done, info = env.step(action)  # collect env feedback
+            next_state = np.reshape(next_state, [1, state_size])
+def trainer_cartpole():
     env = gym.make('CartPole-v1')
     state_size = env.observation_space.shape[0]
-    action_size = env.action_space.n #number of actions
+    action_size = env.action_space.n  # number of actions
     agent = DQN_agent(state_size, action_size)
-    #uncomment if you want to just see it running (have to train first)
-    # agent.load_model("cartpole-dqn.h5")
-    #
-    # done = False
-    # state = env.reset()
-    # state = np.reshape(state, [1, state_size])
-    #
-    # while not done:
-    #     env.render()
-    #     action = agent.get_action(state)
-    #     next_state, reward, done, info = env.step(action)
-    #     next_state = np.reshape(next_state, [1, state_size])
-    #     state = next_state
-
-
-    state_size = env.observation_space.shape[0]
-    action_size = env.action_space.n #number of actions
-
-    agent = DQN_agent(state_size, action_size)
-    scores, episodes= [], []
+    scores, episodes = [], []
     for e in range(EPISODES):
         done = False
         score = 0
         state = env.reset()
-        state = np.reshape(state, [1, state_size]) #make array
-        #agent.load_model("cartpole-dqn.h5")
-
+        state = np.reshape(state, [1, state_size])  # make array
         while not done:
             if agent.render:
                 env.render()
-
-            action = agent.get_action(state) #
-            next_state, reward, done, info = env.step(action) #collect env feedback
+            action = agent.get_action(state)  #
+            next_state, reward, done, info = env.step(action)  # collect env feedback
             next_state = np.reshape(next_state, [1, state_size])
-            #if action makes the episode end, give a penalty
+            # if action makes the episode end, give a penalty
             reward = reward if not done or score == 499 else -100
             agent.replay_memory(state, action, reward, next_state, done)
             agent.train()
-            score+=reward
+            score += reward
             state = next_state
-
-            if done:#episode over
+            if done:  # episode over
                 env.reset()
-                agent.update_target_model() #update target model after every episode
+                agent.update_target_model()  # update target model after every episode
                 score = score if score == 500 else score + 100
                 scores.append(score)
                 episodes.append(e)
-                #pylab.plot(episodes, scores, 'b')
-                #pylab.savefig("Cartpole_dqn.png")
+                # pylab.plot(episodes, scores, 'b')
+                # pylab.savefig("Cartpole_dqn.png")
                 print("episode:", e, "  score:", score, "  memory length:", len(agent.memory),
-                      "  epsilon:", agent.epsilon)
-                #environment is considered solved if the mean score of 10 episodes is >490
-                if np.mean(scores[-min(10,len(scores)):]) == 500:
+                     "  epsilon:", agent.epsilon)
+                # environment is considered solved if the mean score of 10 episodes is >490
+                if np.mean(scores[-min(10, len(scores)):]) == 500:
                     agent.save_model("cartpole-dqn.h5")
                     sys.exit()
-                #save model every 500 episodes
+                # save model every 500 episodes
                 if e % 500 == 0:
                     agent.save_model("cartpole-dqn.h5")
+
+
+def test_cartpole(file):
+    env = gym.make('CartPole-v1')
+    state_size = env.observation_space.shape[0]
+    agent = DQN_agent(state_size, env.action_space.n )
+    agent.load_model(file)
+    for i in range(10):
+        state = env.reset()
+        state = np.reshape(state    , [1, state_size])
+        done = False
+        while not done:
+            env.render()
+            action = agent.get_action(state)
+            next_state, reward, done, info = env.step(action)
+            next_state = np.reshape(next_state, [1, state_size])
+            state = next_state
+
+if __name__ == "__main__": #allows this dqn to be imported to other files
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--train", action="store_true")
+    parser.add_argument("--model_file", type=str)
+    args = parser.parse_args()
+    if args.train:
+        trainer_cartpole()
+    else:
+        try:
+            test_cartpole(args.model_file)
+        except FileNotFoundError:
+            print("Must train first before testing")
+
+
