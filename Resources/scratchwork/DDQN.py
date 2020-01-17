@@ -44,7 +44,6 @@ class DQN_agent():
         self.target_model.set_weights(self.model.get_weights())
 
     def get_action(self, state): # e greedy exploration
-        print(self.model.predict(state))
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
         else:
@@ -79,30 +78,43 @@ class DQN_agent():
         self.model.save_weights(name)
 
 
-def triathlon():# solve 3 tasks simultaneously
+def triathlon(render):# solve 3 tasks simultaneously
     envs = []
+    scores = [[],[],[]]
     envs.append(gym.make('Bowling-ram-v0'))
     envs.append(gym.make('Pong-ram-v0'))
     envs.append(gym.make('SpaceInvaders-ram-v0'))
-    observation_size = 128
+    state_size = 128
     action_size = 6
     agent = DQN_agent(state_size, action_size)
+    agent.render = render
     for e in range(EPISODES):
-        env = envs[e%len(envs)]
+        env = envs[e%3]
         done = False
         score = 0
         state = np.reshape(env.reset(), [1, state_size])
         while not done:
-            if agent.render:
-                env.render()
             action = agent.get_action(state)
             next_state, reward, done, info = env.step(action)  # collect env feedback
             next_state = np.reshape(next_state, [1, state_size])
-def trainer_cartpole():
+            agent.replay_memory(state, action, reward, next_state, done)
+            agent.train()
+            score+=reward
+            state = next_state
+            if done:
+                env.reset()
+                agent.update_target_model()
+                scores[e%3].append(score)
+                print(f'episode: {e} env: {env.env.game} reward: {score} episodes for this game: {len(scores[e%3])} average for this game: {np.mean(scores[e%3])}')
+                if e % 500 == 0:
+                    agent.save_model("triathlon-dqn.h5")
+
+def trainer_cartpole(render):
     env = gym.make('CartPole-v1')
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n  # number of actions
     agent = DQN_agent(state_size, action_size)
+    agent.render = render
     scores, episodes = [], []
     for e in range(EPISODES):
         done = False
@@ -147,7 +159,28 @@ def test_cartpole(file):
     agent.load_model(file)
     for i in range(10):
         state = env.reset()
-        state = np.reshape(state    , [1, state_size])
+        state = np.reshape(state, [1, state_size])
+        done = False
+        while not done:
+            env.render()
+            action = agent.get_action(state)
+            next_state, reward, done, info = env.step(action)
+            next_state = np.reshape(next_state, [1, state_size])
+            state = next_state
+
+def test_triathlon(file):
+    envs = []
+    scores = [[],[],[]]
+    envs.append(gym.make('Bowling-ram-v0'))
+    envs.append(gym.make('Pong-ram-v0'))
+    envs.append(gym.make('SpaceInvaders-ram-v0'))
+    observation_size = 128
+    action_size = 6
+    agent = DQN_agent(state_size, action_size)
+    agent.load(file)
+    for i in envs:
+        env = gym.make(i)
+        state = np.reshape(env.reset(), [1, state_size])
         done = False
         while not done:
             env.render()
@@ -160,14 +193,20 @@ if __name__ == "__main__": #allows this dqn to be imported to other files
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--train", action="store_true")
+    parser.add_argument("--env",type=str)
     parser.add_argument("--model_file", type=str)
+    parser.add_argument("--render", action="store_true")
     args = parser.parse_args()
     if args.train:
-        trainer_cartpole()
+        if args.env == "CartPole-v1":
+            trainer_cartpole(args.render)
+        if args.env == "triathlon":
+            triathlon(args.render)
     else:
         try:
-            test_cartpole(args.model_file)
+            if args.env == "CartPole-v1":
+                test_cartpole(args.model_file)
+            if args.env == "triathlon":
+                test_triathlon(args.model_file)
         except FileNotFoundError:
             print("Must train first before testing")
-
-
