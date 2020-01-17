@@ -3,7 +3,7 @@ import numpy as np
 import gym
 import random
 import sys
-
+import matplotlib.pyplot as plt
 from keras.layers import Dense
 from keras.optimizers import Adam
 from keras.models import Sequential
@@ -32,6 +32,7 @@ class DQN_agent():
         self.target_model = self.build_model() #used to evaluate action values
         self.update_target_model()
 
+
     def build_model(self): #the neural network
         model = Sequential()
         model.add(Dense(64, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
@@ -40,8 +41,11 @@ class DQN_agent():
         model.add(Dense(self.action_size, activation = 'linear', kernel_initializer='he_uniform'))
         model.compile(loss = 'mse', optimizer=Adam(self.learning_rate))
         return model
+
+
     def update_target_model(self):
         self.target_model.set_weights(self.model.get_weights())
+
 
     def get_action(self, state): # e greedy exploration
         if np.random.rand() <= self.epsilon:
@@ -50,10 +54,12 @@ class DQN_agent():
             q_values = self.model.predict(state)
             return np.argmax(q_values[0]) #pick action with highest action value
 
+
     def replay_memory(self, s_t1, a, r, s_t2, done): # store transition tuple
         self.memory.append((s_t1, a, r, s_t2, done))
         if self.epsilon > self.epsilon_min: #update epsilon
             self.epsilon *= self.epsilon_decay
+
 
     def train(self):
         if len(self.memory) < self.train_start:
@@ -71,11 +77,25 @@ class DQN_agent():
         targets[range(self.batch_size), action_t] = reward_t + self.discount_factor * np.max(q_val, axis = 1)
         self.model.train_on_batch(state_t, targets)
 
+
     def load_model(self, name):
         self.model.load_weights(name)
 
+
     def save_model(self, name):
         self.model.save_weights(name)
+
+
+def graph_triathlon(results):
+    x = range(1,len(results[0])+1)
+    plt.plot(x,results[0],'ro')
+
+    x = range(1,len(results[1])+1)
+    plt.plot(x,results[0],'go')
+
+    x = range(1,len(results[2])+1)
+    plt.plot(x,results[0],'bo')
+    plt.savefig("triathlon_training_results.png")
 
 
 def triathlon(render):# solve 3 tasks simultaneously
@@ -93,7 +113,9 @@ def triathlon(render):# solve 3 tasks simultaneously
         done = False
         score = 0
         state = np.reshape(env.reset(), [1, state_size])
+        ep_len = 0
         while not done:
+            ep_len+=1
             action = agent.get_action(state)
             next_state, reward, done, info = env.step(action)  # collect env feedback
             next_state = np.reshape(next_state, [1, state_size])
@@ -105,7 +127,7 @@ def triathlon(render):# solve 3 tasks simultaneously
                 env.reset()
                 agent.update_target_model()
                 scores[e%3].append(score)
-                print(f'episode: {e} env: {env.env.game} reward: {score} episodes for this game: {len(scores[e%3])} average for this game: {np.mean(scores[e%3])}')
+                print(f'episode: {e}\tenv: {env.env.game}\tepisode length: {ep_len}\treward: {score}\tavg of 10: {np.mean(scores[e%3][-10:])}')
                 if e % 500 == 0:
                     agent.save_model("triathlon-dqn.h5")
 
