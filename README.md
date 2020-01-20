@@ -28,7 +28,7 @@ Contains presentations I made over the year
 #### Journals:
 Contains weekly progress reports
 #### Resources/Models:
-This is where you will find repository code for [DIAYN] (https://arxiv.org/abs/1802.06070), Double DQN, and [a discrete soft actor critic implementation] (https://github.com/p-christ/Deep-Reinforcement-Learning-Algorithms-with-PyTorch)
+This is where you will find repository code for [DIAYN](https://arxiv.org/abs/1802.06070), Double DQN, and [a discrete soft actor critic implementation](https://github.com/p-christ/Deep-Reinforcement-Learning-Algorithms-with-PyTorch)
 #### Resources/scratchwork:
 Contains miscelanious models I attempted to implement such as Double DQN and Soft-actor-critic
 
