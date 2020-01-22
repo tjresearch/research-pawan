@@ -128,7 +128,7 @@ def triathlon(render):# solve 3 tasks simultaneously
                 agent.update_target_model()
                 scores[e%3].append(score)
                 print(f'episode: {e}\tenv: {env.env.game}\tepisode length: {ep_len}\treward: {score}\tavg of 10: {np.mean(scores[e%3][-10:])}')
-                if e % 500 == 0:
+                if e % 100 == 0:
                     agent.save_model("triathlon-dqn.h5")
 
 def trainer_cartpole(render):
