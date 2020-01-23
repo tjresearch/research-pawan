@@ -31,7 +31,7 @@ class DIAYN(Base_Agent):
 
         assert self.hyperparameters["DISCRIMINATOR"]["final_layer_activation"] == None, "Final layer activation for disciminator should be None"
         self.discriminator = self.create_NN(self.state_size, self.num_skills, key_to_use="DISCRIMINATOR")
-        self.discriminator_optimizer = optim.Adam(self.discriminator.parameters(),
+        self.discriminator_optimizer = optimc.Adam(self.discriminator.parameters(),
                                               lr=self.hyperparameters["DISCRIMINATOR"]["learning_rate"])
         self.agent_config = copy.deepcopy(config)
         self.agent_config.environment = DIAYN_Skill_Wrapper(copy.deepcopy(self.environment), self.num_skills, self)

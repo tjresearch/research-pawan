@@ -41,6 +41,9 @@ action_balanced_replay_buffer = True
 copy_over_hidden_layers = True
 action_length_reward_bonus = 0.1
 
+num_skills = 100
+num_unsupservised_episodes = 1000
+discriminator_learning_rate = 0.0003
 config.hyperparameters = {
 
     "HRL": {
@@ -108,7 +111,10 @@ config.hyperparameters = {
             "gradient_clipping_norm": 5,
             "initialiser": "Xavier"
         },
-
+        "DISCRIMINATOR": {
+            "final_layer_activation" : None
+            "learning_rate" : discriminator_learning_rate
+        },
         "min_steps_before_learning": 10000,
         "batch_size": 256,
         "discount_rate": 0.99,
