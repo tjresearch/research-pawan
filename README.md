@@ -14,10 +14,11 @@ My goal with this project is to adapt DIAYN and hopefully show that it is able t
 1. Python 3.6
 2. Tensorflow 2.0 GPU and its dependencies
 3. OpenAI Gym and its dependencies
-4. MuJoCo python
+4. (Optional) MuJoCo License for MuJoCo environments 
 
 ### Run instructions (Work in Progress)
 Open a terminal within the repository.
+create a conda env
 pip install -r requirements.txt
 Train command:
 Test pre-trained model:
@@ -27,7 +28,7 @@ Contains presentations I made over the year
 #### Journals:
 Contains weekly progress reports
 #### Resources/Models:
-This is where you will find repository code for DIAYN, HAC, and OpenAI's soft-actor-critic implementation
+This is where you will find repository code for [DIAYN](https://arxiv.org/abs/1802.06070), Double DQN, and [a discrete soft actor critic implementation](https://github.com/p-christ/Deep-Reinforcement-Learning-Algorithms-with-PyTorch)
 #### Resources/scratchwork:
 Contains miscelanious models I attempted to implement such as Double DQN and Soft-actor-critic
 
