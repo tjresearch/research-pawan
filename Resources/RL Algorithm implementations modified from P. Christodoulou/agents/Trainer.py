@@ -67,7 +67,7 @@ class Trainer(object):
             "A2C": "#F1948A",
             "SAC": "#1C2833",
             "DIAYN": "#F322CD",
-            "HRL": "#0E0F0F"
+            "HRL": "#0E0F0F",
         }
         return agent_to_color_dictionary
 
