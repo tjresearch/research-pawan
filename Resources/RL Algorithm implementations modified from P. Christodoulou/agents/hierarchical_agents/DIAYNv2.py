@@ -12,14 +12,15 @@ from agents.actor_critic_agents.SAC import SAC
 from agents.actor_critic_agents.SAC_Discrete import SAC_Discrete
 
 '''
-NOTE: DIAYN calculates diversity of states penalty each timestep 
+NOTE: DIAYN calculates diversity of states penalty each timestep
 but it might be better to only base it on where the agent got to in the last timestep, or after X timesteps
 
-NOTE another problem with this is that the discriminator is trained from online data 
+NOTE another problem with this is that the discriminator is trained from online data
 as it comes in which isn't independent and identically distributed
-so we could probably make it perform better by maintaining 
+so we could probably make it perform better by maintaining
 a replay buffer and using that to train the discriminator instead
 '''
+
 
 class DIAYN(Base_Agent):
     """Hierarchical RL agent based on the paper Diversity is all you need (2018) - https://arxiv.org/pdf/1802.06070.pdf.
@@ -44,7 +45,10 @@ class DIAYN(Base_Agent):
         self.agent_config.hyperparameters = self.agent_config.hyperparameters["AGENT"]
         self.agent_config.hyperparameters["do_evaluation_iterations"] = False # check
 
-        self.agent = SAC(self.agent_config)  #We have to use SAC because it involves maximising the policy's entropy over actions which is also a part of DIAYN
+        if 'Discrete' in config.environment[0].action_space:
+            self.agent = SAC_Discrete(self.agent_config)
+        else:
+            self.agent = SAC(self.agent_config)  #We have to use SAC because it involves maximising the policy's entropy over actions which is also a part of DIAYN
 
         self.timesteps_to_give_up_control_for = self.hyperparameters["MANAGER"]["timesteps_to_give_up_control_for"] # check
         self.manager_agent_config = copy.deepcopy(config)

@@ -19,6 +19,7 @@ class SAC(Base_Agent):
     agent_name = "SAC"
     def __init__(self, config):
         Base_Agent.__init__(self, config)
+        self.config = config
         assert self.action_types == "CONTINUOUS", "Action types must be continuous. Use SAC Discrete instead for discrete actions"
         assert self.config.hyperparameters["Actor"]["final_layer_activation"] != "Softmax", "Final actor layer must not be softmax"
         self.hyperparameters = config.hyperparameters
@@ -57,6 +58,8 @@ class SAC(Base_Agent):
                                   self.hyperparameters["theta"], self.hyperparameters["sigma"])
 
         self.do_evaluation_iterations = self.hyperparameters["do_evaluation_iterations"]
+        self.verbose = 1
+        self.episode_step_number_val = 0
 
     def save_result(self):
         """Saves the result of an episode of the game. Overriding the method in Base Agent that does this because we only
@@ -95,6 +98,29 @@ class SAC(Base_Agent):
         if eval_ep: self.print_summary_of_latest_evaluation_episode()
         self.episode_number += 1
 
+    def step_j(self, n):
+        """Runs an episode on the game, saving the experience and running a learning step if appropriate"""
+        eval_ep = self.episode_number % TRAINING_EPISODES_PER_EVAL_EPISODE == 0 and self.do_evaluation_iterations
+        self.episode_step_number_val = 0
+        self.done = False
+        while not self.done:
+            self.episode_step_number_val += 1
+            self.action = self.pick_action_j(eval_ep, n)
+            self.conduct_action_j(self.action, n)
+            print('picked and conducted')
+            if self.time_for_critic_and_actor_to_learn():
+                for _ in range(self.hyperparameters["learning_updates_per_learning_session"]):
+                    self.learn()
+            mask = False if self.episode_step_number_val >= self.max_episode_steps[n] else self.done
+            if not eval_ep: self.save_experience(experience=(self.state, self.action, self.reward, self.next_state, mask))
+            self.state = self.next_state
+            self.global_step_number += 1
+            print('updated')
+        print('\n\n\nEPISODE LENGTH: ', self.episode_step_number_val)
+        print(self.total_episode_score_so_far)
+        if eval_ep: self.print_summary_of_latest_evaluation_episode()
+        self.episode_number += 1
+
     def pick_action(self, eval_ep, state=None):
         """Picks an action using one of three methods: 1) Randomly if we haven't passed a certain number of steps,
          2) Using the actor in evaluation mode if eval_ep is True  3) Using the actor in training mode if eval_ep is False.
@@ -103,7 +129,21 @@ class SAC(Base_Agent):
         if eval_ep: action = self.actor_pick_action(state=state, eval=True)
         elif self.global_step_number < self.hyperparameters["min_steps_before_learning"]:
             action = self.environment.action_space.sample()
-            print("Picking random action ", action)
+            if self.verbose == 2:
+                print("Picking random action ", action)
+        else: action = self.actor_pick_action(state=state)
+        if self.add_extra_noise:
+            action += self.noise.sample()
+        return action
+
+    def pick_action_j(self, eval_ep, n, state=None):
+        """Picks an action using one of three methods: 1) Randomly if we haven't passed a certain number of steps,
+         2) Using the actor in evaluation mode if eval_ep is True  3) Using the actor in training mode if eval_ep is False.
+         The difference between evaluation and training mode is that training mode does more exploration"""
+        if state is None: state = self.state
+        if eval_ep: action = self.actor_pick_action(state=state, eval=True)
+        elif self.global_step_number < self.hyperparameters["min_steps_before_learning"]:
+            action = self.environment[n].action_space.sample()
         else: action = self.actor_pick_action(state=state)
         if self.add_extra_noise:
             action += self.noise.sample()

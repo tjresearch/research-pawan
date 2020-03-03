@@ -71,6 +71,7 @@ class Trainer(object):
         }
         return agent_to_color_dictionary
 
+
     def run_games_for_agents(self):
         """Run a set of games for each agent. Optionally visualising and/or saving the results"""
         self.results = self.create_object_to_store_results()
@@ -101,15 +102,10 @@ class Trainer(object):
         for run in range(self.config.runs_per_agent):
             agent_config = copy.deepcopy(self.config)
 
-            if self.environment_has_changeable_goals(agent_config.environment) and self.agent_cant_handle_changeable_goals_without_flattening(agent_name):
-                print("Flattening changeable-goal environment for agent {}".format(agent_name))
-                agent_config.environment = gym.wrappers.FlattenDictWrapper(agent_config.environment,
-                                                                           dict_keys=["observation", "desired_goal"])
-
             if self.config.randomise_random_seed: agent_config.seed = random.randint(0, 2**32 - 2)
             agent_config.hyperparameters = agent_config.hyperparameters[agent_group]
             print("AGENT NAME: {}".format(agent_name))
-            print("\033[1m" + "{}.{}: {}".format(agent_number, agent_round, agent_name) + "\033[0m", flush=True)
+            print("\033[1;33m" + "{}.{}: {}".format(agent_number, agent_round, agent_name) + "\033[0;0m", flush=True)
             agent = agent_class(agent_config)
             self.environment_name = agent.environment_title
             print(agent.hyperparameters)
@@ -287,7 +283,7 @@ class Trainer(object):
         fig.tight_layout()
         fig.subplots_adjust(bottom=0.25)
 
-        if save_image_path: plt.savefig(save_image_path) #, bbox_inches="tight")
+        if save_image_path: plt.savefig(save_image_path)  # bbox_inches="tight")
         if show_image: plt.show()
 
         # ax.imshow(z, aspect="auto")

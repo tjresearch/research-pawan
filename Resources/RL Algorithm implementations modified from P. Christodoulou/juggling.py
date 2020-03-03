@@ -1,11 +1,11 @@
 import gym
 from agents.hierarchical_agents.DIAYN import DIAYN
-from agents.actor_critic_agents.SAC import SAC
+from agents.actor_critic_agents.SAC_Discrete import SAC_Discrete
 from agents.Trainer import Trainer
 from utilities.data_structures.Config import Config
 
 config = Config()
-config.environment = gym.make("MountainCarContinuous-v0")
+config.environment = [gym.make('Bowling-ram-v0'), gym.make('Pong-ram-v0'), gym.make('SpaceInvaders-ram-v0')]
 config.seed = 1
 config.env_parameters = {}
 config.num_episodes_to_run = 10000
@@ -21,7 +21,7 @@ config.overwrite_existing_results_file = False
 config.randomise_random_seed = True
 config.save_model = False
 
-linear_hidden_units = [32, 32]
+linear_hidden_units = [128, 128, 32]
 learning_rate = 0.01
 buffer_size = 100000
 batch_size = 256
@@ -29,7 +29,7 @@ batch_norm = False
 embedding_dimensionality = 10
 gradient_clipping_norm = 5
 update_every_n_steps = 1
-learning_iterations = 1
+learning_iterations = 2
 epsilon_decay_rate_denominator = 400
 discount_rate = 0.99
 tau = 0.01
@@ -40,7 +40,7 @@ action_balanced_replay_buffer = True
 copy_over_hidden_layers = True
 action_length_reward_bonus = 0.1
 
-num_skills = 2
+num_skills = 30
 num_unsupservised_episodes = int(.75 * config.num_episodes_to_run)
 discriminator_learning_rate = 0.0003
 timesteps_to_give_up_control_for = 30
@@ -54,10 +54,11 @@ config.hyperparameters = {
             "gradient_clipping_norm": 5,
         },
         "AGENT": {
+            "steps_per_env": timesteps_to_give_up_control_for,
             "clip_rewards": False,
             "do_evaluation_iterations": False,
             "learning_rate": 0.005,
-            "linear_hidden_units": [20, 10],
+            "linear_hidden_units": [128, 128, 32],
             "final_layer_activation": ["SOFTMAX", None],
             "gradient_clipping_norm": 5.0,
             "epsilon_decay_rate_denominator": 1.0,
@@ -78,7 +79,7 @@ config.hyperparameters = {
             "use_GPU": config.use_GPU,
             "Actor": {
                 "learning_rate": 0.0003,
-                "linear_hidden_units": [64, 64],
+                "linear_hidden_units": [128, 128, 32],
                 "final_layer_activation": None,
                 "batch_norm": False,
                 "tau": 0.005,
@@ -88,7 +89,7 @@ config.hyperparameters = {
 
             "Critic": {
                 "learning_rate": 0.0003,
-                "linear_hidden_units": [64, 64],
+                "linear_hidden_units": [128, 128, 32],
                 "final_layer_activation": None,
                 "batch_norm": False,
                 "buffer_size": 1000000,
@@ -133,11 +134,10 @@ config.hyperparameters = {
         'update_every_n_steps': 1,
         'discount_rate': .99,
         'do_evaluation_iterations': False,
-
         "Actor": {
             "learning_rate": 0.0003,
-                "linear_hidden_units": [64, 64],
-                "final_layer_activation": None,
+                "linear_hidden_units": [128, 128, 32],
+                "final_layer_activation": 'Softmax',
                 "batch_norm": False,
                 "tau": 0.005,
                 "gradient_clipping_norm": 5,
@@ -146,7 +146,7 @@ config.hyperparameters = {
 
         "Critic": {
             "learning_rate": 0.0003,
-                "linear_hidden_units": [64, 64],
+                "linear_hidden_units": [128, 128, 32],
                 "final_layer_activation": None,
                 "batch_norm": False,
                 "buffer_size": 1000000,
@@ -158,6 +158,6 @@ config.hyperparameters = {
 }
 
 if __name__ == "__main__":
-    AGENTS = [DIAYN]
+    AGENTS = [SAC_Discrete]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()
