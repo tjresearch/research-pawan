@@ -1,14 +1,17 @@
 import gym
 from agents.hierarchical_agents.DIAYN import DIAYN
 from agents.actor_critic_agents.SAC_Discrete import SAC_Discrete
+from agents.actor_critic_agents.SAC import SAC
 from agents.Trainer import Trainer
 from utilities.data_structures.Config import Config
 
 config = Config()
-config.environment = [gym.make('Bowling-ram-v0'), gym.make('Pong-ram-v0'), gym.make('SpaceInvaders-ram-v0')]
+#config.environment = [gym.make('Bowling-ram-v0'), gym.make('Pong-ram-v0'), gym.make('SpaceInvaders-ram-v0')]
+config.environment_name = 'MountainCarContinuous-v0'
+config.environment = gym.make(config.environment_name)
 config.seed = 1
 config.env_parameters = {}
-config.num_episodes_to_run = 10000
+config.num_episodes_to_run = 11
 config.file_to_save_data_results = None
 config.file_to_save_results_graph = None
 config.show_solution_score = False
@@ -137,7 +140,7 @@ config.hyperparameters = {
         "Actor": {
             "learning_rate": 0.0003,
                 "linear_hidden_units": [128, 128, 32],
-                "final_layer_activation": 'Softmax',
+                "final_layer_activation": None,
                 "batch_norm": False,
                 "tau": 0.005,
                 "gradient_clipping_norm": 5,
@@ -158,6 +161,6 @@ config.hyperparameters = {
 }
 
 if __name__ == "__main__":
-    AGENTS = [SAC_Discrete]
+    AGENTS = [SAC]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()

@@ -166,7 +166,7 @@ def main():
     args = parser.parse_args()
     env = gym.make(args.env+'NoFrameskip'+'-v0')
 
-    play(env, zoom=4, fps=40)
+    play(env, zoom=4, fps=60)
 
 
 if __name__ == '__main__':

@@ -23,6 +23,7 @@ class Base_Agent(object):
         if type(self.environment) == list:
             self.environment_title = "Juggling"
             self.action_types = 'DISCRETE'
+            self.n_to_sub_env = {0:'Bowling', 1: 'Pong', 2: 'SpaceInvaders'}
             self.action_size = 6
             self.lowest_possible_episode_score = [0,-21, 0]
             self.average_score_required_to_win = [100, 21, 500]
@@ -33,26 +34,68 @@ class Base_Agent(object):
             self.max_rolling_score_seen = [float("-inf"), float("-inf"), float("-inf")]
             self.max_episode_score_seen = [float("-inf"), float("-inf"), float("-inf")]
         else:
+            env_info = {
+                'Pong-ram-v0': {
+                    'name': 'Pong',
+                    'action_type': 'DISCRETE',
+                    'action_size': 6,
+                    'state_size': 128 ,
+                    'goal_score': 18,
+                    'lowest_possible_score': -21,
+                    'max_steps': 10000,
+                    'window_size': 100,
+
+                 },
+                'Pong-v0': {
+                    'name': 'Pong',
+                    'action_type': 'DISCRETE',
+                    'action_size': 6,
+                    'state_size': 100800,
+                    'goal_score': 18,
+                    'worst_score': -21,
+                    'max_steps': 10000,
+                    'window_size': 100
+                },
+                'MountainCarContinuous-v0': {
+                    'name': 'Mountain Car',
+                    'action_type': 'CONTINUOUS',
+                    'action_size': 1,
+                    'state_size': 2,
+                    'goal_score': 18,
+                    'worst_score': -200,
+                    'max_steps': 200,
+                    'window_size': 100
+                }
+            }
+            print(gym.make('Pong-v0').reset().size)
+
             self.environment_title = self.get_environment_title()
             print(self.get_environment_title())
             print("env action type: ", self.environment.action_space)
-            print(str(self.environment.unwrapped))
-            self.action_types = "DISCRETE" if self.environment.action_space.dtype == np.int64 else "CONTINUOUS"
-            self.action_size = int(self.get_action_size())
-            self.lowest_possible_episode_score = self.get_lowest_possible_episode_score()
-            self.state_size = int(self.get_state_size())
-            self.average_score_required_to_win = self.get_score_required_to_win()
+            if config.environment_name in env_info:
+                self.action_types = env_info[config.environment_name]['action_type']
+                self.action_size = env_info[config.environment_name]['action_size']
+                self.lowest_possible_episode_score = env_info[config.environment_name]['worst_score']
+                self.state_size = env_info[config.environment_name]['state_size']
+                self.average_score_required_to_win = env_info[config.environment_name]['goal_score']
+                self.max_episode_steps = env_info[config.environment_name]['max_steps']
+                self.rolling_score_window = env_info[config.environment_name]['window_size']
+                self.episode_timestep_limit = env_info[config.environment_name]['max_steps']
+            else:
+                self.action_types = "DISCRETE" if self.environment.action_space.dtype == np.int64 else "CONTINUOUS"
+                self.action_size = int(self.get_action_size())
+                self.lowest_possible_episode_score = self.get_lowest_possible_episode_score()
+                self.state_size = int(self.get_state_size())
+                self.average_score_required_to_win = self.get_score_required_to_win()
+                self.rolling_score_window = self.get_trials()
+                self.episode_timestep_limit = self.get_episode_timestep_limit()
             self.game_full_episode_scores = []
             self.rolling_results = []
             self.max_rolling_score_seen = float("-inf")
             self.max_episode_score_seen = float("-inf")
+
         self.config.action_size = self.action_size
         self.hyperparameters = config.hyperparameters
-
-
-        self.rolling_score_window = self.get_trials()
-        self.episode_timestep_limit = self.get_episode_timestep_limit()
-        # self.max_steps_per_episode = self.environment.spec.max_episode_steps
         self.total_episode_score_so_far = 0
         self.episode_number = 0
         self.device = "cuda:0"
@@ -124,17 +167,6 @@ class Base_Agent(object):
         if self.environment_title in ["AntMaze", "Hopper", "Walker2d"]:
             print("Score required to win set to infinity therefore no learning rate annealing will happen")
             return float("inf")
-        if self.environment_title == 'Juggling':
-            total = 0
-            for env in self.environment:
-                try:
-                    total += self.environment.unwrapped.reward_threshold
-                except AttributeError:
-                    try:
-                        total += self.environment.spec.reward_threshold
-                    except AttributeError:
-                        total+= self.environment.unwrapped.spec.reward_threshold
-            return total
 
         try: return self.environment.unwrapped.reward_threshold
         except AttributeError:
@@ -253,8 +285,8 @@ class Base_Agent(object):
             start = time.time()
             while self.episode_number < num_episodes:
                 self.reset_game_j(self.episode_number % 3)
-                self.step_j(self.episode_number % 3)
-                if save_and_print_results: self.save_and_print_result_j(self.episode_number % 3)
+                episode_length = self.step_j(self.episode_number % 3)
+                if save_and_print_results: self.save_and_print_result_j(self.episode_number % 3, episode_length)
             time_taken = time.time() - start
             if show_whether_achieved_goal:
                 self.show_whether_achieved_goal_j(0)
@@ -267,9 +299,8 @@ class Base_Agent(object):
             start = time.time()
             while self.episode_number < num_episodes:
                 self.reset_game()
-                for t in range(self.episode_timestep_limit):
-                    self.step()
-                    if save_and_print_results: self.save_and_print_result()
+                ep_len = self.step()
+                if save_and_print_results: self.save_and_print_result(ep_len)
             time_taken = time.time() - start
             if show_whether_achieved_goal: self.show_whether_achieved_goal()
             if self.config.save_model: self.locally_save_policy()
@@ -288,16 +319,16 @@ class Base_Agent(object):
         if self.hyperparameters["clip_rewards"]: self.reward =  max(min(self.reward, 1.0), -1.0)
 
 
-    def save_and_print_result(self):
+    def save_and_print_result(self, episode_length):
         """Saves and prints results of the game"""
         self.save_result()
-        self.print_rolling_result()
+        self.print_rolling_result(episode_length)
 
 
-    def save_and_print_result_j(self, n):
+    def save_and_print_result_j(self, n, episode_length):
         """Saves and prints results of the game"""
         self.save_result_j(n)
-        self.print_rolling_result_j(n)
+        self.print_rolling_result_j(n, episode_length)
 
     def save_result(self):
         """Saves the result of an episode of the game"""
@@ -329,17 +360,17 @@ class Base_Agent(object):
             if len(self.rolling_results) > self.rolling_score_window:
                 self.max_rolling_score_seen = self.rolling_results[-1]
 
-    def print_rolling_result(self):
+    def print_rolling_result(self, episode_length):
         """Prints out the latest episode results"""
-        print("\r Episode {0}, Score: {3: .2f}, Max score seen: {4: .2f}, Rolling score: {1: .2f}, Max rolling score seen: {2: .2f}".format(
+        print("\r Episode {0}, length {5} Score: {3: .2f}, Max score seen: {4: .2f}, Rolling score: {1: .2f}, Max rolling score seen: {2: .2f}".format(
             len(self.game_full_episode_scores), self.rolling_results[-1], self.max_rolling_score_seen,
-            self.game_full_episode_scores[-1], self.max_episode_score_seen))
+            self.game_full_episode_scores[-1], self.max_episode_score_seen, episode_length))
 
-    def print_rolling_result_j(self, n):
+    def print_rolling_result_j(self, n, episode_length):
         """Prints out the latest episode results"""
-        print("\r Episode {0}, environment {5} Score: {3: .2f}, Max score seen: {4: .2f}, Rolling score: {1: .2f}, Max rolling score seen: {2: .2f}".format(
+        print("\r Episode {0}, environment {5} Score: {3: .2f}, episode length: {6} Max score seen: {4: .2f}, Rolling score: {1: .2f}, Max rolling score seen: {2: .2f}".format(
             len(self.game_full_episode_scores[n]), self.rolling_results[n][-1], self.max_rolling_score_seen[n],
-            self.game_full_episode_scores[n][-1], self.max_episode_score_seen[n], n))
+            self.game_full_episode_scores[n][-1], self.max_episode_score_seen[n], self.n_to_sub_env[n], episode_length))
 
     def show_whether_achieved_goal(self):
         """Prints out whether the agent achieved the environment target goal"""

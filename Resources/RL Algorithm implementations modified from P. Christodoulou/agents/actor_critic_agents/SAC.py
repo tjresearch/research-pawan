@@ -83,6 +83,7 @@ class SAC(Base_Agent):
         """Runs an episode on the game, saving the experience and running a learning step if appropriate"""
         eval_ep = self.episode_number % TRAINING_EPISODES_PER_EVAL_EPISODE == 0 and self.do_evaluation_iterations
         self.episode_step_number_val = 0
+        print(self.done)
         while not self.done:
             self.episode_step_number_val += 1
             self.action = self.pick_action(eval_ep)
@@ -94,9 +95,9 @@ class SAC(Base_Agent):
             if not eval_ep: self.save_experience(experience=(self.state, self.action, self.reward, self.next_state, mask))
             self.state = self.next_state
             self.global_step_number += 1
-        print(self.total_episode_score_so_far)
         if eval_ep: self.print_summary_of_latest_evaluation_episode()
         self.episode_number += 1
+        return self.episode_step_number_val
 
     def step_j(self, n):
         """Runs an episode on the game, saving the experience and running a learning step if appropriate"""
@@ -107,7 +108,6 @@ class SAC(Base_Agent):
             self.episode_step_number_val += 1
             self.action = self.pick_action_j(eval_ep, n)
             self.conduct_action_j(self.action, n)
-            print('picked and conducted')
             if self.time_for_critic_and_actor_to_learn():
                 for _ in range(self.hyperparameters["learning_updates_per_learning_session"]):
                     self.learn()
@@ -115,11 +115,11 @@ class SAC(Base_Agent):
             if not eval_ep: self.save_experience(experience=(self.state, self.action, self.reward, self.next_state, mask))
             self.state = self.next_state
             self.global_step_number += 1
-            print('updated')
-        print('\n\n\nEPISODE LENGTH: ', self.episode_step_number_val)
-        print(self.total_episode_score_so_far)
+            # print('updated')
+        # print('\nEPISODE LENGTH: ', self.episode_step_number_val)
         if eval_ep: self.print_summary_of_latest_evaluation_episode()
         self.episode_number += 1
+        return self.episode_step_number_val
 
     def pick_action(self, eval_ep, state=None):
         """Picks an action using one of three methods: 1) Randomly if we haven't passed a certain number of steps,
@@ -141,10 +141,14 @@ class SAC(Base_Agent):
          2) Using the actor in evaluation mode if eval_ep is True  3) Using the actor in training mode if eval_ep is False.
          The difference between evaluation and training mode is that training mode does more exploration"""
         if state is None: state = self.state
-        if eval_ep: action = self.actor_pick_action(state=state, eval=True)
+        if eval_ep:
+            print('time to perform!')
+            action = self.actor_pick_action(state=state, eval=True)
         elif self.global_step_number < self.hyperparameters["min_steps_before_learning"]:
             action = self.environment[n].action_space.sample()
-        else: action = self.actor_pick_action(state=state)
+        else:
+            #print('not random!')
+            action = self.actor_pick_action(state=state)
         if self.add_extra_noise:
             action += self.noise.sample()
         return action
