@@ -1,0 +1,26 @@
+Miniconda installation:
+wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+chmod +x Miniconda-latest-Linux-x86_64.sh
+./Miniconda-latest-Linux-x86_64.sh
+
+restart the terminal
+
+conda create -n research-pawan python=3.6
+conda activate research-pawan
+
+git clone https://github.com/tjresearch/research-pawan
+cd research-pawan
+cd Resources
+pip3 install -r requirements.txt
+
+usage:
+
+training:
+python3 juggling.py algs = [], envs = [], save_policy = True, train = True
+
+if policy is saved and train = False, environment will be rendered showing the agent perfomring
+also, a gif will be created of the agent playing.
+https://note.nkmk.me/en/python-pillow-gif/
+
+
+see below for tested algorithms and envs
