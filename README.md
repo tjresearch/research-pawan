@@ -8,18 +8,16 @@ Scaling this seemingly recursive design to three levels or more introduces more 
 
 ### Project Overview
 This project explores how options for  HRL can be formed by adapting the [Diversity Is All You Need (DIAYN)](https://arxiv.org/abs/1802.06070) algorithm to a n level hierarchy. DIAYN is an option discovery method which uses entropy maximization and mutual information bewteen options and the states they visit to force options which are all equally effective and as diverse as possible. Since these options were discovered without the task being known, they can also be re-used for multiple tasks.
-My goal with this project is to adapt DIAYN and hopefully show that it is able to learn a hierarchy which can solve several ATARI ram environments, each faster than the previous one.
+My goal with this project is to adapt DIAYN and hopefully show that it is able to learn a hierarchy which can solve 3 ATARI ram environments simultaneously better than existing algorithms.
 
-### Requirements (Linux)
-1. Python 3.6
-2. Tensorflow 2.0 GPU and its dependencies
-3. OpenAI Gym and its dependencies
-4. (Optional) MuJoCo License for MuJoCo environments 
+### Requirements 
+1. Miniconda or Anaconda
+2. CUDA compatible GPU
 
 ### Run instructions (Work in Progress)
 Open a terminal within the repository.
 create a conda env
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 Train command:
 Test pre-trained model:
 ### Description of each folder:
@@ -27,9 +25,14 @@ Test pre-trained model:
 Contains presentations I made over the year
 #### Journals:
 Contains weekly progress reports
-#### Resources/Models:
-This is where you will find repository code for [DIAYN](https://arxiv.org/abs/1802.06070), Double DQN, and [a discrete soft actor critic implementation](https://github.com/p-christ/Deep-Reinforcement-Learning-Algorithms-with-PyTorch)
-#### Resources/scratchwork:
-Contains miscelanious models I attempted to implement such as Double DQN and Soft-actor-critic
-
-### Replays of some solved environments(Work in Progress)
+#### Resources:
+Scratchwork contains algorithms I implemented
+Research Papers includes a list of preprints I referenced
+Main is where the actual project is
+Main/results is where test results, gifs, models, graphs are stored
+Main/agents includes implementations of various reinforcement learning algorithms by Petros Christodoulou
+Test results are where graphs and such are stored
+#### Acknowledgements:
+I would like to thank Petros Christodoulou for his soft actor critic implementation and Dr.White for his guidance without which would have made this project more difficult. 
+https://github.com/p-christ/Deep-Reinforcement-Learning-Algorithms-with-PyTorch
+### GIFS of some solved environments(Work in Progress)
