@@ -1,8 +1,12 @@
+six==1.13.0
+setuptools==44.0.0
 numpy==1.18.1
+scipy==1.4.1
 torch==1.4
 matplotlib==3.1.1
 PyVirtualDisplay==0.2.1
-gym==0.10.9
+gym==0.15.4
 nn_builder
 tensorflow-gpu==2.1
+tensorboard==2.1
 pygame==1.9.6
