@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9cd614c2-5679-40a0-914a-85c57047d033" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/.travis.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/DIAYN_Experiment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/Base_Agent.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/DQN_agents/DDQN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/DQN_agents/DDQN_With_Prioritised_Experience_Replay.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/DQN_agents/DQN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/DQN_agents/DQN_HER.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/DQN_agents/DQN_With_Fixed_Q_Targets.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/DQN_agents/Dueling_DDQN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/HER_Base.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/Trainer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/actor_critic_agents/A2C.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/actor_critic_agents/A3C.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/actor_critic_agents/DDPG.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/actor_critic_agents/DDPG_HER.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/actor_critic_agents/SAC.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/actor_critic_agents/SAC_Discrete.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/actor_critic_agents/TD3.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/hierarchical_agents/DIAYN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/hierarchical_agents/DIAYNv2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/hierarchical_agents/HIRO.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/hierarchical_agents/SNN_HRL.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/hierarchical_agents/h_DQN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/policy_gradient_agents/PPO.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/agents/policy_gradient_agents/REINFORCE.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/Ant_Navigation_Environments.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/Atari_Environment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/Bit_Flipping_Environment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/Four_Rooms_Environment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/Long_Corridor_Environment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/Open_AI_Wrappers.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/ant_environments/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/ant_environments/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/ant_environments/ant.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/ant_environments/ant_maze_env.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/ant_environments/assets/ant.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/ant_environments/create_maze_env.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/ant_environments/maze_env.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/ant_environments/maze_env_utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/ant_environments/point.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/environments/ant_environments/point_maze_env.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/exhaustive_requirements.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/exploration_strategies/Base_Exploration_Strategy.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/exploration_strategies/Epsilon_Greedy_Exploration.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/exploration_strategies/Gaussian_Exploration.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/exploration_strategies/OU_Noise_Exploration.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/human_player.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/juggling.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/requirements.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/Bit_Flipping.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/Cart_Pole.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/Fetch_Reach.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/Four_Rooms.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/HRL_Experiments.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/HRL_Taxi_Experiments.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/Hopper.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/Long_Corridor.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/Mountain_Car.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/Reacher.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/Space_Invaders.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/Taxi.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/Walker.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Bit_Flipping_Results_Data.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Bit_Flipping_Results_Graph.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/CartPole_and_MountainCar_Graph.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/DIAYN_MountainCarContinuous_fewshot_Graph.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Fetch_Reach_Results_Data.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Fetch_Reach_Results_Graph.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Four_Rooms.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Four_Rooms.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Four_Rooms_and_Long_Corridor.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/HER_Experiments.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Hopper_Results_Data.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Hopper_Results_Graph.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Hopper_Results_Graph_Both_Agents.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Long_Corridor_Graph.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Long_Corridor_Results_Data.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Long_Corridor_Results_Graph.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Mountain_Car_Results_Data.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Mountain_Car_Results_Graph.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Plot_Sets_Of_Results.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Taxi_data.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Taxi_graph.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Taxi_graph_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Walker_Results_Data.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/Walker_Results_Graph.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/hrl_experiments/Cart_Pole.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/hrl_experiments/Cart_Pole_data.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/hrl_experiments/Taxi.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/hrl_experiments/Taxi_data.pkl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/results/data_and_graphs/hrl_experiments/Taxi_graph_comparison.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_Action_Balanced_Replay_Buffer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_Agents.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_Bit_Flipping_Environment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_DQN_HER.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_Deque.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_Four_Rooms_Environment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_HIRO.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_HRL.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_Max_Heap.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_Memory_Shaper.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_Prioritised_Replay_Buffer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_Sequitur.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/tests/Test_Trainer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/triathlon.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/Deepmind_RMS_Prop.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/Memory_Shaper.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/OU_Noise.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/Parallel_Experience_Generator.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/PyTorch-logo-2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/RL_image.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/Tensorboard.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/Utility_Functions.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/data_structures/Action_Balanced_Replay_Buffer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/data_structures/Config.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/data_structures/Deque.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/data_structures/Max_Heap.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/data_structures/Node.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/data_structures/Prioritised_Replay_Buffer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/data_structures/Replay_Buffer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/data_structures/Tanh_Distribution.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/RL Algorithm implementations modified from P. Christodoulou/utilities/grammar_algorithms/k_Sequitur.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/hdiayn.py" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1Ytzx9XTzBloUFrLuiX4E34CV8H" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9cd614c2-5679-40a0-914a-85c57047d033" name="Default Changelist" comment="" />
+      <created>1583776922811</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1583776922811</updated>
+      <workItem from="1583776932386" duration="20000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+</project>

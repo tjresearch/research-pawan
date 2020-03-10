@@ -4,6 +4,7 @@ from agents.actor_critic_agents.SAC_Discrete import SAC_Discrete
 from agents.actor_critic_agents.SAC import SAC
 from agents.Trainer import Trainer
 from utilities.data_structures.Config import Config
+import argparse
 
 config = Config()
 #config.environment = [gym.make('Bowling-ram-v0'), gym.make('Pong-ram-v0'), gym.make('SpaceInvaders-ram-v0')]
@@ -161,6 +162,11 @@ config.hyperparameters = {
 }
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('environment', help='which environment to compare on')
+    parser.add_argument('algorithms', nargs='+', help='which algorithms to compare')
+    parser.add_argument('evaluate', type = bool,default=False, help='set False for training and True for evaluating.')
+
     AGENTS = [SAC]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()

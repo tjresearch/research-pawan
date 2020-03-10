@@ -10,4 +10,3 @@ nn_builder
 tensorflow-gpu==2.1
 tensorboard==2.1
 pygame==1.9.6
-atari-py==1.2.1
