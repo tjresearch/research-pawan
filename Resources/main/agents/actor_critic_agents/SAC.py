@@ -6,6 +6,7 @@ import torch
 import torch.nn.functional as F
 from torch.distributions import Normal
 import numpy as np
+import os
 
 LOG_SIG_MAX = 2
 LOG_SIG_MIN = -20
@@ -250,3 +251,33 @@ class SAC(Base_Agent):
         print("----------------------------")
         print("Episode score {} ".format(self.total_episode_score_so_far))
         print("----------------------------")
+
+    def locally_save_policy(self):
+        """Saves the policy"""
+        if not os.path.exists('results/{}'.format(self.config.environment_name)):
+            os.makedirs('results/{}'.format(self.config.environment_name))
+        torch.save(self.actor_local.state_dict(), "results/{}/{}_local_network.pt".format(self.config.environment_name, self.agent_name))
+
+    def visualize_and_evauluate(self, n_episodes):
+        self.actor_local.load_state_dict(torch.load("results/{}/{}_local_network.pt".format(self.config.environment_name, self.agent_name)))
+        for e in range(n_episodes):
+            state = self.environment.reset()
+            done = False
+            total_reward = 0
+            step_count = 0
+            if type(state) == dict:
+                state = np.array(list(state['observation']) + list(state['desired_goal']))
+            state = torch.FloatTensor([state]).to(self.device)
+            while not done and step_count < self.max_steps_per_episode:
+                self.environment.render()
+                with torch.no_grad():
+                    _, z, action = self.produce_action_and_action_info(state)
+                action = action.detach().cpu().numpy()[0]
+                next_state, reward, done, _ = self.environment.step(action)
+                if type(next_state) == dict:
+                    next_state = np.array(list(next_state['observation']) + list(next_state['desired_goal']))
+                state = next_state
+                state = torch.FloatTensor([state]).to(self.device)
+                total_reward += reward
+            print("episode {} done with reward {}".format(e + 1, total_reward))
+

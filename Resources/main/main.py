@@ -1,29 +1,69 @@
 import gym
 from agents.hierarchical_agents.DIAYN import DIAYN
+from agents.hierarchical_agents.DBH import DBH
 from agents.actor_critic_agents.SAC_Discrete import SAC_Discrete
 from agents.actor_critic_agents.SAC import SAC
+from agents.DQN_agents.DDQN import DDQN
 from agents.Trainer import Trainer
 from utilities.data_structures.Config import Config
 import argparse
 
 config = Config()
-#config.environment = [gym.make('Bowling-ram-v0'), gym.make('Pong-ram-v0'), gym.make('SpaceInvaders-ram-v0')]
-config.environment_name = 'MountainCarContinuous-v0'
-config.environment = gym.make(config.environment_name)
-config.seed = 1
-config.env_parameters = {}
-config.num_episodes_to_run = 11
-config.file_to_save_data_results = None
-config.file_to_save_results_graph = None
-config.show_solution_score = False
-config.visualise_individual_results = False
-config.visualise_overall_agent_results = True
-config.standard_deviation_results = 1.0
-config.runs_per_agent = 3
-config.use_GPU = True
-config.overwrite_existing_results_file = False
-config.randomise_random_seed = True
-config.save_model = False
+parser = argparse.ArgumentParser()
+parser.add_argument('--env', action='store', dest='environment', help='which environment to compare on')
+parser.add_argument('--alg', nargs='+', action='store', dest='algorithms', help='which algorithms to compare')
+parser.add_argument('--eval', type=bool, default=False, action='store', dest='evaluate',
+                    help='set False for training and True for evaluating.')
+parser.add_argument('--num_ep', type=int, default=11, action='store', dest='num_episodes',
+                    help='How many episodes to train for')
+parser.add_argument('--save_results', type=bool, default=True, action='store', dest='save_results',
+                    help='Set to False if you don\'t want to save training results and the model')
+parser.add_argument('--run_triathlon_standard', type=bool, default=False, action='store', dest='rts',
+                    help='Run Triathlon with SAC_Discrete, DDQN, DIAYN, and DBH, with standard configurations')
+parser.add_argument('--n_trials', type=int, default='1', action='store', dest='n_trials',
+                    help='How many training runs to do per agent to analyze variance')
+parser.add_argument('--seed', type=int, default='1', action='store', dest='seed',
+                    help='Set the seed to reproduce results')
+parser.add_argument('--use_GPU', type=bool, default=True, action='store', dest='use_GPU',
+                    help='Set to False if you don\'t have a GPU')
+args = parser.parse_args()
+
+str_to_obj = {
+    'SAC': SAC,
+    'DDQN': DDQN,
+    'SAC_Discrete': SAC_Discrete,
+    'DIAYN': DIAYN,
+    'DBH': DBH
+}
+if args.rts:
+    config.environment = [gym.make('Bowling-ram-v0'), gym.make('Pong-ram-v0'), gym.make('SpaceInvaders-ram-v0')]
+    AGENTS = [DDQN, SAC_Discrete, DIAYN, DBH]
+    config.environment_name = 'Triathlon'
+    config.seed = '123'
+    config.num_episodes_to_run = 10000
+    config.save_results = True
+    config.evaluate = True
+    config.overwrite_existing_results_file = True
+    config.save_directory = 'results/triathlon'
+    config.use_GPU = True
+    config.overwrite_existing_results_file = True
+    config.runs_per_agent = 3
+
+else:
+    AGENTS = [str_to_obj[i] for i in args.algorithms]
+    config.environment_name = args.environment
+    config.environment = gym.make(config.environment_name)
+    config.eval = args.evaluate
+    config.seed = args.seed
+    config.num_episodes_to_run = args.num_episodes
+    config.runs_per_agent = args.n_trials
+    config.use_GPU = args.use_GPU
+    config.save_results = args.save_results
+    config.overwrite_existing_results_file = args.save_results
+    config.save_directory = 'results/{}'.format(config.environment_name)
+    config.visualise_overall_agent_results = True
+    config.standard_deviation_results = 1.0
+
 
 linear_hidden_units = [128, 128, 32]
 learning_rate = 0.01
@@ -140,33 +180,33 @@ config.hyperparameters = {
         'do_evaluation_iterations': False,
         "Actor": {
             "learning_rate": 0.0003,
-                "linear_hidden_units": [128, 128, 32],
-                "final_layer_activation": None,
-                "batch_norm": False,
-                "tau": 0.005,
-                "gradient_clipping_norm": 5,
-                "initialiser": "Xavier",
+            "linear_hidden_units": [128, 128, 32],
+            "final_layer_activation": None,
+            "batch_norm": False,
+            "tau": 0.005,
+            "gradient_clipping_norm": 5,
+            "initialiser": "Xavier",
         },
 
         "Critic": {
             "learning_rate": 0.0003,
-                "linear_hidden_units": [128, 128, 32],
-                "final_layer_activation": None,
-                "batch_norm": False,
-                "buffer_size": 1000000,
-                "tau": 0.005,
-                "gradient_clipping_norm": 5,
-                "initialiser": "Xavier",
+            "linear_hidden_units": [128, 128, 32],
+            "final_layer_activation": None,
+            "batch_norm": False,
+            "buffer_size": 1000000,
+            "tau": 0.005,
+            "gradient_clipping_norm": 5,
+            "initialiser": "Xavier",
         },
     }
 }
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('environment', help='which environment to compare on')
-    parser.add_argument('algorithms', nargs='+', help='which algorithms to compare')
-    parser.add_argument('evaluate', type = bool,default=False, help='set False for training and True for evaluating.')
+    print('rerun with -h flag to see possible args or check the read me file')
 
-    AGENTS = [SAC]
     trainer = Trainer(config, AGENTS)
-    trainer.run_games_for_agents()
+    if config.eval:
+        trainer.eval_model(config.num_episodes_to_run)
+    else:
+        trainer.run_games_for_agents()
+

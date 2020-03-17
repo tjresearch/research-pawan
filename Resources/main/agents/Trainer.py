@@ -81,8 +81,9 @@ class Trainer(object):
             if self.config.visualise_overall_agent_results:
                 agent_rolling_score_results = [results[1] for results in  self.results[agent_name]]
                 self.visualise_overall_agent_results(agent_rolling_score_results, agent_name, show_mean_and_std_range=True)
-        if self.config.file_to_save_data_results: self.save_obj(self.results, self.config.file_to_save_data_results)
-        if self.config.file_to_save_results_graph: plt.savefig(self.config.file_to_save_results_graph, bbox_inches="tight")
+        if self.config.save_results:
+            self.save_obj(self.results, "{}/data.pkl".format(self.config.save_directory))
+            plt.savefig("{}/graph.png".format(self.config.save_directory), bbox_inches='tight')
         plt.show()
         return self.results
 
@@ -105,7 +106,7 @@ class Trainer(object):
             if self.config.randomise_random_seed: agent_config.seed = random.randint(0, 2**32 - 2)
             agent_config.hyperparameters = agent_config.hyperparameters[agent_group]
             print("AGENT NAME: {}".format(agent_name))
-            print("\033[1;33m" + "{}.{}: {}".format(agent_number, agent_round, agent_name) + "\033[0;0m", flush=True)
+            print("{}.{}: {}".format(agent_number, agent_round, agent_name), flush=True)
             agent = agent_class(agent_config)
             self.environment_name = agent.environment_title
             print(agent.hyperparameters)
@@ -240,7 +241,7 @@ class Trainer(object):
         """Saves given object as a pickle file"""
         if name[-4:] != ".pkl":
             name += ".pkl"
-        with open(name, 'wb') as f:
+        with open(name, 'wb+') as f:
             pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
     def load_obj(self, name):
@@ -287,6 +288,19 @@ class Trainer(object):
         if show_image: plt.show()
 
         # ax.imshow(z, aspect="auto")
+
+    def eval_model(self, n):
+        for agent_class in self.agents:
+            agent_name = agent_class.agent_name
+            agent_group = self.agent_to_agent_group[agent_name]
+            agent_config = copy.deepcopy(self.config)
+            agent_config.hyperparameters = agent_config.hyperparameters[agent_group]
+            print('evaluating', agent_name)
+            print("RANDOM SEED ", agent_config.seed)
+            agent = agent_class(agent_config)
+            print(agent.hyperparameters)
+            agent.visualize_and_evauluate(n)
+
 
 
 
