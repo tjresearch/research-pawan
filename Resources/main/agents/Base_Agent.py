@@ -292,7 +292,7 @@ class Base_Agent(object):
                 self.show_whether_achieved_goal_j(0)
                 self.show_whether_achieved_goal_j(1)
                 self.show_whether_achieved_goal_j(2)
-            # if self.config.save_model: self.locally_save_policy()
+            if self.config.save_results: self.locally_save_policy()
             return self.game_full_episode_scores, self.rolling_results, time_taken
         else:
             if num_episodes is None: num_episodes = self.config.num_episodes_to_run
@@ -303,7 +303,7 @@ class Base_Agent(object):
                 if save_and_print_results: self.save_and_print_result(ep_len)
             time_taken = time.time() - start
             if show_whether_achieved_goal: self.show_whether_achieved_goal()
-            if self.config.save_model: self.locally_save_policy()
+            if self.config.save_results: self.locally_save_policy()
             return self.game_full_episode_scores, self.rolling_results, time_taken
 
     def conduct_action(self, action):
@@ -537,3 +537,7 @@ class Base_Agent(object):
         """Copies model parameters from from_model to to_model"""
         for to_model, from_model in zip(to_model.parameters(), from_model.parameters()):
             to_model.data.copy_(from_model.data.clone())
+
+    def locally_save_policy(self):
+        """Saves the policy. This method must be overriden by any agent"""
+        raise ValueError("Step needs to be implemented by the agent")

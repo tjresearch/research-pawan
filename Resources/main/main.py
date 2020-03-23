@@ -1,4 +1,4 @@
-import gym
+import gym, os
 from agents.hierarchical_agents.DIAYN import DIAYN
 from agents.hierarchical_agents.DBH import DBH
 from agents.actor_critic_agents.SAC_Discrete import SAC_Discrete
@@ -8,13 +8,14 @@ from agents.Trainer import Trainer
 from utilities.data_structures.Config import Config
 import argparse
 
+
 config = Config()
 parser = argparse.ArgumentParser()
-parser.add_argument('--env', action='store', dest='environment', help='which environment to compare on')
-parser.add_argument('--alg', nargs='+', action='store', dest='algorithms', help='which algorithms to compare')
+parser.add_argument('--env', action='store', dest='environment', default='SpaceInvaders-v0', help='which environment to compare on')
+parser.add_argument('--alg', nargs='+', action='store', dest='algorithms', default='SAC_Discrete', help='which algorithms to compare')
 parser.add_argument('--eval', type=bool, default=False, action='store', dest='evaluate',
                     help='set False for training and True for evaluating.')
-parser.add_argument('--num_ep', type=int, default=11, action='store', dest='num_episodes',
+parser.add_argument('--num_ep', type=int, default=20, action='store', dest='num_episodes',
                     help='How many episodes to train for')
 parser.add_argument('--save_results', type=bool, default=True, action='store', dest='save_results',
                     help='Set to False if you don\'t want to save training results and the model')
@@ -26,6 +27,12 @@ parser.add_argument('--seed', type=int, default='1', action='store', dest='seed'
                     help='Set the seed to reproduce results')
 parser.add_argument('--use_GPU', type=bool, default=True, action='store', dest='use_GPU',
                     help='Set to False if you don\'t have a GPU')
+parser.add_argument('--run_prefix', action='store', dest='run_prefix', default='run_1',
+                    help='Add a prefix to this run to group results together. Runs will be saved in results/run_prefix'
+                         'allows user to eval or train existing models by specifying this run')
+parser.add_argument('--train_existing_model', action='store', dest='tem', default=False,
+                    help='If you want to continue training an existing model, setting this to true will find the model '
+                         'associated with the run prefix, environment and algorithm specified')
 args = parser.parse_args()
 
 str_to_obj = {
@@ -36,18 +43,8 @@ str_to_obj = {
     'DBH': DBH
 }
 if args.rts:
-    config.environment = [gym.make('Bowling-ram-v0'), gym.make('Pong-ram-v0'), gym.make('SpaceInvaders-ram-v0')]
+    config.rts()
     AGENTS = [DDQN, SAC_Discrete, DIAYN, DBH]
-    config.environment_name = 'Triathlon'
-    config.seed = '123'
-    config.num_episodes_to_run = 10000
-    config.save_results = True
-    config.evaluate = True
-    config.overwrite_existing_results_file = True
-    config.save_directory = 'results/triathlon'
-    config.use_GPU = True
-    config.overwrite_existing_results_file = True
-    config.runs_per_agent = 3
 
 else:
     AGENTS = [str_to_obj[i] for i in args.algorithms]
@@ -59,8 +56,10 @@ else:
     config.runs_per_agent = args.n_trials
     config.use_GPU = args.use_GPU
     config.save_results = args.save_results
-    config.overwrite_existing_results_file = args.save_results
-    config.save_directory = 'results/{}'.format(config.environment_name)
+    config.run_prefix = args.run_prefix
+    config.save_directory = 'results/{}'.format(config.run_prefix)
+    if not os.path.exists(config.save_directory):
+        os.makedirs(config.save_directory)
     config.visualise_overall_agent_results = True
     config.standard_deviation_results = 1.0
 
@@ -88,8 +87,9 @@ num_skills = 30
 num_unsupservised_episodes = int(.75 * config.num_episodes_to_run)
 discriminator_learning_rate = 0.0003
 timesteps_to_give_up_control_for = 30
-config.hyperparameters = {
 
+
+config.hyperparameters = {
     "DIAYN": {
         "DISCRIMINATOR": {
             "final_layer_activation": None,

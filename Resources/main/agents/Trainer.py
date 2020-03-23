@@ -83,7 +83,7 @@ class Trainer(object):
                 self.visualise_overall_agent_results(agent_rolling_score_results, agent_name, show_mean_and_std_range=True)
         if self.config.save_results:
             self.save_obj(self.results, "{}/data.pkl".format(self.config.save_directory))
-            plt.savefig("{}/graph.png".format(self.config.save_directory), bbox_inches='tight')
+            plt.savefig("{}/{}_graph.png".format(self.config.save_directory,self.config.environment_name), bbox_inches='tight')
         plt.show()
         return self.results
 

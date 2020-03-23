@@ -84,8 +84,8 @@ class SAC(Base_Agent):
         """Runs an episode on the game, saving the experience and running a learning step if appropriate"""
         eval_ep = self.episode_number % TRAINING_EPISODES_PER_EVAL_EPISODE == 0 and self.do_evaluation_iterations
         self.episode_step_number_val = 0
-        print(self.done)
-        while not self.done:
+        self.done = False
+        while not self.done and self.episode_step_number_val < self.max_episode_steps:
             self.episode_step_number_val += 1
             self.action = self.pick_action(eval_ep)
             self.conduct_action(self.action)
@@ -105,7 +105,7 @@ class SAC(Base_Agent):
         eval_ep = self.episode_number % TRAINING_EPISODES_PER_EVAL_EPISODE == 0 and self.do_evaluation_iterations
         self.episode_step_number_val = 0
         self.done = False
-        while not self.done:
+        while not self.done and self.episode_step_number_val < self.max_episode_steps:
             self.episode_step_number_val += 1
             self.action = self.pick_action_j(eval_ep, n)
             self.conduct_action_j(self.action, n)
@@ -254,12 +254,14 @@ class SAC(Base_Agent):
 
     def locally_save_policy(self):
         """Saves the policy"""
-        if not os.path.exists('results/{}'.format(self.config.environment_name)):
-            os.makedirs('results/{}'.format(self.config.environment_name))
-        torch.save(self.actor_local.state_dict(), "results/{}/{}_local_network.pt".format(self.config.environment_name, self.agent_name))
+        torch.save(self.actor_local.state_dict(),
+                   "results/{}/{}_{}_local_network.pt".format(self.config.run_prefix,
+                                                              self.agent_name, self.config.environment_name))
 
     def visualize_and_evauluate(self, n_episodes):
-        self.actor_local.load_state_dict(torch.load("results/{}/{}_local_network.pt".format(self.config.environment_name, self.agent_name)))
+        self.actor_local.load_state_dict(torch.load(
+            "results/{}/{}_{}_local_network.pt".format(self.config.run_prefix,
+                                                       self.agent_name, self.config.environment_name)))
         for e in range(n_episodes):
             state = self.environment.reset()
             done = False
@@ -268,7 +270,7 @@ class SAC(Base_Agent):
             if type(state) == dict:
                 state = np.array(list(state['observation']) + list(state['desired_goal']))
             state = torch.FloatTensor([state]).to(self.device)
-            while not done and step_count < self.max_steps_per_episode:
+            while not done and step_count < self.max_episode_steps:
                 self.environment.render()
                 with torch.no_grad():
                     _, z, action = self.produce_action_and_action_info(state)
