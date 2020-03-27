@@ -57,6 +57,7 @@ else:
     config.use_GPU = args.use_GPU
     config.save_results = args.save_results
     config.run_prefix = args.run_prefix
+    config.train_existing_model = args.tem
     config.save_directory = 'results/{}'.format(config.run_prefix)
     if not os.path.exists(config.save_directory):
         os.makedirs(config.save_directory)

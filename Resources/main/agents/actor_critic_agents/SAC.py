@@ -24,6 +24,7 @@ class SAC(Base_Agent):
         assert self.action_types == "CONTINUOUS", "Action types must be continuous. Use SAC Discrete instead for discrete actions"
         assert self.config.hyperparameters["Actor"]["final_layer_activation"] != "Softmax", "Final actor layer must not be softmax"
         self.hyperparameters = config.hyperparameters
+
         self.critic_local = self.create_NN(input_dim=self.state_size + self.action_size, output_dim=1, key_to_use="Critic")
         self.critic_local_2 = self.create_NN(input_dim=self.state_size + self.action_size, output_dim=1,
                                            key_to_use="Critic", override_seed=self.config.seed + 1)
@@ -44,6 +45,9 @@ class SAC(Base_Agent):
         self.actor_local = self.create_NN(input_dim=self.state_size, output_dim=self.action_size * 2, key_to_use="Actor")
         self.actor_optimizer = torch.optim.Adam(self.actor_local.parameters(),
                                           lr=self.hyperparameters["Actor"]["learning_rate"], eps=1e-4)
+        if config.train_existing_model:
+            self.load_checkpoint()
+
         self.automatic_entropy_tuning = self.hyperparameters["automatically_tune_entropy_hyperparameter"]
         if self.automatic_entropy_tuning:
             self.target_entropy = -torch.prod(torch.Tensor(self.environment.action_space.shape).to(self.device)).item() # heuristic value from the paper
@@ -252,16 +256,34 @@ class SAC(Base_Agent):
         print("Episode score {} ".format(self.total_episode_score_so_far))
         print("----------------------------")
 
-    def locally_save_policy(self):
-        """Saves the policy"""
-        torch.save(self.actor_local.state_dict(),
-                   "results/{}/{}_{}_local_network.pt".format(self.config.run_prefix,
+
+    def save_checkpoint(self):
+        """Saves all the critics and optimizers"""
+        torch.save({'policy': self.actor_local.state_dict(),
+                    'policy_optimizer': self.actor_optimizer.state_dict(),
+                    'critic1': self.critic_local.state_dict(),
+                    'critic2': self.critic_local_2.state_dict(),
+                    'critic_optimizer': self.critic_optimizer.state_dict(),
+                    'critic2_optimizer': self.critic_optimizer_2.state_dict()},
+                    'results/{}/{}_{}_checkpoint.pt'.format(self.config.run_prefix,
                                                               self.agent_name, self.config.environment_name))
+    def load_checkpoint(self):
+        """Loads checkpoint based on the run prefix passed"""
+        checkpoint = torch.load("results/{}/{}_{}_checkpoint.pt".format(self.config.run_prefix,
+                                                                        self.agent_name, self.config.environment_name))
+        self.actor_local.load_state_dict(checkpoint['policy'])
+        self.actor_optimizer.load_state_dict(checkpoint['policy_optimizer'])
+        self.critic_optimizer.load_state_dict(checkpoint['critic_optimizer'])
+        self.critic_optimizer_2.load_state_dict(checkpoint['critic2_optimizer'])
+        self.critic_local.load_state_dict(checkpoint['critic1'])
+        self.critic_local_2.load_state_dict(checkpoint['critic2'])
+        self.critic_target.load_state_dict(checkpoint['critic1'])
+        self.critic_target_2.load_state_dict(checkpoint['critic2'])
 
     def visualize_and_evauluate(self, n_episodes):
-        self.actor_local.load_state_dict(torch.load(
-            "results/{}/{}_{}_local_network.pt".format(self.config.run_prefix,
-                                                       self.agent_name, self.config.environment_name)))
+        checkpoint = torch.load("results/{}/{}_{}_checkpoint.pt".format(self.config.run_prefix,
+                                                                        self.agent_name, self.config.environment_name))
+        self.actor_local.load_state_dict(checkpoint['policy'])
         for e in range(n_episodes):
             state = self.environment.reset()
             done = False
