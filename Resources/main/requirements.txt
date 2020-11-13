@@ -7,6 +7,6 @@ matplotlib==3.1.1
 PyVirtualDisplay==0.2.1
 gym==0.15.4
 nn_builder
-tensorflow-gpu==2.1
+tensorflow-gpu==2.3.1
 tensorboard==2.1
 pygame==1.9.6
